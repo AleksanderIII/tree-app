@@ -1,9 +1,7 @@
-import { Box, IconButton, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, Typography } from '@mui/material';
 
 import styles from './Tree.module.css';
+import ControlsPanel from './ControlsPanel';
 
 interface ITreeNodeContentProps {
   name: string;
@@ -32,38 +30,12 @@ const TreeNodeContent: React.FC<ITreeNodeContentProps> = ({
           ({childrenLength})
         </Typography>
       ) : null}
-      <Box className={styles.controlsPanel}>
-        <IconButton
-          style={{ marginRight: '5px' }}
-          color='success'
-          size='small'
-          title='Add Child Node'
-          onClick={onAdd}
-        >
-          <AddIcon />
-        </IconButton>
-        {isRootNode ? null : (
-          <>
-            <IconButton
-              style={{ marginRight: '5px' }}
-              color='info'
-              size='small'
-              title='Edit Node'
-              onClick={onEdit}
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              title='Delete Node'
-              color='error'
-              size='small'
-              onClick={onDelete}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </>
-        )}
-      </Box>
+      <ControlsPanel
+        isRootNode={isRootNode}
+        onAdd={onAdd}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </Box>
   );
 };
