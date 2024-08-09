@@ -12,7 +12,11 @@ const TreeNodeToggle: React.FC<TreeNodeToggleProps> = ({
   onClick,
 }) => {
   return (
-    <IconButton onClick={onClick} size='small'>
+    <IconButton
+      style={{ position: 'absolute', left: '-30px' }}
+      onClick={onClick}
+      size='small'
+    >
       {isExpanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
     </IconButton>
   );

@@ -18,9 +18,10 @@ const Tree: React.FC = () => {
   const handleOpenPopup = (
     header: string,
     nodeName: string,
-    nodeId?: number
+    nodeId?: number,
+    childrenLength?: number
   ) => {
-    dispatch(openPopup({ header, nodeName, nodeId }));
+    dispatch(openPopup({ header, nodeName, nodeId, childrenLength }));
   };
 
   if (loading) return <p>Loading...</p>;

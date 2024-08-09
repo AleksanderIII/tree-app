@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { API_GET_TREE_URL } from '../api/endpoints';
+import {
+  API_GET_TREE_URL,
+  API_RENAME_NODE_URL,
+  API_DELETE_NODE_URL,
+  API_CREATE_NODE_URL,
+} from '../api/endpoints';
 
 export interface Node {
   id: number;
@@ -19,7 +24,6 @@ const initialState: TreeState = {
   error: null,
 };
 
-// Async thunk for fetching tree data
 export const fetchTreeData = createAsyncThunk<Node>(
   'tree/fetchTreeData',
   async () => {
@@ -35,6 +39,66 @@ export const fetchTreeData = createAsyncThunk<Node>(
     return response.json();
   }
 );
+
+export const renameNode = createAsyncThunk<
+  void,
+  { nodeId: number; newName: string }
+>('tree/renameNode', async ({ nodeId, newName }, { dispatch }) => {
+  const response = await fetch(
+    `${API_RENAME_NODE_URL}&nodeId=${nodeId}&newNodeName=${newName}`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to rename node');
+  }
+
+  dispatch(updateNodeName({ nodeId, newName }));
+});
+
+export const deleteNode = createAsyncThunk<void, number>(
+  'tree/deleteNode',
+  async (nodeId, { dispatch }) => {
+    const response = await fetch(`${API_DELETE_NODE_URL}&nodeId=${nodeId}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete node');
+    }
+
+    dispatch(removeNode({ nodeId }));
+  }
+);
+
+export const addNode = createAsyncThunk<
+  void,
+  { parentNodeId: number; nodeName: string }
+>('tree/addNode', async ({ parentNodeId, nodeName }, { dispatch }) => {
+  const response = await fetch(
+    `${API_CREATE_NODE_URL}&parentNodeId=${parentNodeId}&nodeName=${nodeName}`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to add node');
+  }
+
+   dispatch(addNodeToTree({ parentNodeId, nodeName }));
+});
 
 const treeSlice = createSlice({
   name: 'tree',
@@ -61,6 +125,47 @@ const treeSlice = createSlice({
 
       updateNode(state.node);
     },
+    removeNode: (state, action: PayloadAction<{ nodeId: number }>) => {
+      const { nodeId } = action.payload;
+
+      const removeNode = (nodes: Node[]): Node[] => {
+        return nodes.filter((node) => {
+          if (node.id === nodeId) {
+            return false;
+          }
+          node.children = removeNode(node.children);
+          return true;
+        });
+      };
+
+      if (state.node) {
+        state.node.children = removeNode(state.node.children);
+      }
+    },
+    addNodeToTree: (
+      state,
+      action: PayloadAction<{ parentNodeId: number; nodeName: string }>
+    ) => {
+      const { parentNodeId, nodeName } = action.payload;
+
+      const addNode = (nodes: Node[]): void => {
+        for (const node of nodes) {
+          if (node.id === parentNodeId) {
+            node.children.push({
+              id: Date.now(),
+              name: nodeName,
+              children: [],
+            });
+          } else if (node.children.length > 0) {
+            addNode(node.children);
+          }
+        }
+      };
+
+      if (state.node) {
+        addNode(state.node.children);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -78,9 +183,12 @@ const treeSlice = createSlice({
       .addCase(fetchTreeData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error as Error;
+      })
+      .addCase(renameNode.rejected, (state, action) => {
+        state.error = action.error as Error;
       });
   },
 });
 
-export const { updateNodeName } = treeSlice.actions;
+export const { updateNodeName, removeNode, addNodeToTree } = treeSlice.actions;
 export default treeSlice.reducer;

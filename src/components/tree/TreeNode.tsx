@@ -8,7 +8,12 @@ import { Box } from '@mui/material';
 interface TreeNodeProps {
   isRootNode: boolean;
   node: Node;
-  onOpenPopup: (header: string, nodeName: string, nodeId?: number) => void;
+  onOpenPopup: (
+    header: string,
+    nodeName: string,
+    nodeId?: number,
+    childrenLength?: number
+  ) => void;
 }
 
 const TreeNode: React.FC<TreeNodeProps> = ({
@@ -24,7 +29,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
   return (
     <Box className={styles.treeNode}>
-      <Box key={node.id} className={styles.treeNode__content}>
+      <Box
+        style={{ position: 'relative' }}
+        key={node.id}
+        className={styles.treeNode__content}
+      >
         {node.children.length > 0 && (
           <TreeNodeToggle isExpanded={isExpanded} onClick={handleToggle} />
         )}
@@ -34,13 +43,16 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           isRootNode={isRootNode}
           onAdd={() => onOpenPopup('Add', node.name, node.id)}
           onEdit={() => onOpenPopup('Edit', node.name, node.id)}
-          onDelete={() => console.log('Delete', node.name)}
+          onDelete={() =>
+            onOpenPopup('Delete', node.name, node.id, node.children.length)
+          }
         />
       </Box>
       {node.children.length > 0 && isExpanded && (
         <Box className={styles.treeNode__children}>
           {node.children.map((childNode) => (
             <TreeNode
+              key={childNode.name}
               isRootNode={false}
               node={childNode}
               onOpenPopup={onOpenPopup}

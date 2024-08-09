@@ -9,12 +9,14 @@ interface PopupState {
   isOpen: boolean;
   content: PopupContent;
   nodeId?: number;
+  childrenLength?: number;
 }
 
 const initialState: PopupState = {
   isOpen: false,
   content: { header: '', nodeName: '' },
   nodeId: undefined,
+  childrenLength: undefined,
 };
 
 const popupSlice = createSlice({
@@ -27,6 +29,7 @@ const popupSlice = createSlice({
         header: string;
         nodeName: string;
         nodeId?: number;
+        childrenLength?: number;
       }>
     ) {
       state.isOpen = true;
@@ -35,6 +38,7 @@ const popupSlice = createSlice({
         nodeName: action.payload.nodeName,
       };
       state.nodeId = action.payload.nodeId;
+      state.childrenLength = action.payload.childrenLength;
     },
     closePopup(state) {
       state.isOpen = false;

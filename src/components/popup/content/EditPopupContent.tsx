@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { AppDispatch, RootState } from '../../../store';
-import { API_RENAME_NODE_URL } from '../../../api/endpoints';
 import { closePopup } from '../../../slices/popupSlice';
+import { renameNode } from '../../../slices/treeSlice';
 
 const EditPopupContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,22 +21,13 @@ const EditPopupContent: React.FC = () => {
   };
 
   const handleRename = () => {
-    if (nodeId !== undefined) {
-      fetch(`${API_RENAME_NODE_URL}&nodeId=${nodeId}&newNodeName=${nodeName}`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log('Node renamed successfully');
-            dispatch(closePopup());
-          } else {
-            console.error('Failed to rename node');
-          }
+    if (nodeId !== undefined && nodeName.trim()) {
+      dispatch(renameNode({ nodeId, newName: nodeName }))
+        .unwrap()
+        .then(() => {
+          dispatch(closePopup());
         })
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => console.error('Failed to rename node:', error));
     }
   };
 

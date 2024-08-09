@@ -1,6 +1,7 @@
 .treeNode {
   display: flex;
   flex-direction: column;
+  margin-left: 10px;
 }
 
 .treeNode__content {
@@ -9,5 +10,17 @@
 }
 
 .treeNode__children {
-  margin-left: 40px;
+  margin-top: 5px;
+  margin-left: 20px;
+}
+
+.controlsPanel {
+  visibility: hidden;
+  transition: visibility 0.2s ease-in-out;
+}
+
+.treeNode__content:hover {
+  .controlsPanel {
+    visibility: visible;
+  }
 }

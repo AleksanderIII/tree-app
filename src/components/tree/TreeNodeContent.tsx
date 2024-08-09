@@ -1,4 +1,7 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 import styles from './Tree.module.css';
 
@@ -29,36 +32,38 @@ const TreeNodeContent: React.FC<ITreeNodeContentProps> = ({
           ({childrenLength})
         </Typography>
       ) : null}
-      <Button
-        style={{ marginRight: '5px' }}
-        variant='contained'
-        color='success'
-        size='small'
-        onClick={onAdd}
-      >
-        Add
-      </Button>
-      {isRootNode ? null : (
-        <>
-          <Button
-            style={{ marginRight: '5px' }}
-            variant='contained'
-            color='info'
-            size='small'
-            onClick={onEdit}
-          >
-            Edit
-          </Button>
-          <Button
-            variant='contained'
-            color='error'
-            size='small'
-            onClick={onDelete}
-          >
-            Delete
-          </Button>
-        </>
-      )}
+      <Box className={styles.controlsPanel}>
+        <IconButton
+          style={{ marginRight: '5px' }}
+          color='success'
+          size='small'
+          title='Add Child Node'
+          onClick={onAdd}
+        >
+          <AddIcon />
+        </IconButton>
+        {isRootNode ? null : (
+          <>
+            <IconButton
+              style={{ marginRight: '5px' }}
+              color='info'
+              size='small'
+              title='Edit Node'
+              onClick={onEdit}
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              title='Delete Node'
+              color='error'
+              size='small'
+              onClick={onDelete}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </>
+        )}
+      </Box>
     </Box>
   );
 };
