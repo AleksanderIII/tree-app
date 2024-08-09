@@ -1,65 +1,54 @@
-import { useState } from 'react';
-import { ITreeNode } from './types';
-import TreeNodeToggle from './TreeNodeToggle';
+import React, { useState } from 'react';
+import { Node } from '../../slices/treeSlice';
 import TreeNodeContent from './TreeNodeContent';
-import { usePopup } from '../../context/PopupContext';
+import TreeNodeToggle from './TreeNodeToggle';
 import styles from './Tree.module.css';
+import { Box } from '@mui/material';
 
-const TreeNode: React.FC<ITreeNode> = ({ name, children, id }) => {
+interface TreeNodeProps {
+  isRootNode: boolean;
+  node: Node;
+  onOpenPopup: (header: string, nodeName: string, nodeId?: number) => void;
+}
+
+const TreeNode: React.FC<TreeNodeProps> = ({
+  node,
+  isRootNode,
+  onOpenPopup,
+}) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const { openPopup } = usePopup();
 
-  const handleAddClick = () => {
-    openPopup({
-      header: 'Add',
-      body: <input type='text' placeholder='Enter node name' />,
-      footer: null,
-      nodeId: null,
-      nodeName: '',
-    });
-  };
-
-  const handleEditClick = () => {
-    openPopup({
-      header: 'Edit',
-      body: (
-        <input type='text' defaultValue={name} placeholder='Edit node name' />
-      ),
-      footer: null,
-      nodeId: id,
-      nodeName: name,
-    });
-  };
-
-  const handleDeleteClick = () => {
-    console.log('Delete', name);
+  const handleToggle = () => {
+    setIsExpanded((prev) => !prev);
   };
 
   return (
-    <div className={styles.treeNode}>
-      <div className={styles.treeNode__content}>
-        {children.length > 0 && (
-          <TreeNodeToggle
-            isExpanded={isExpanded}
-            onClick={() => setIsExpanded((prev) => !prev)}
-          />
+    <Box className={styles.treeNode}>
+      <Box key={node.id} className={styles.treeNode__content}>
+        {node.children.length > 0 && (
+          <TreeNodeToggle isExpanded={isExpanded} onClick={handleToggle} />
         )}
         <TreeNodeContent
-          name={name}
-          childrenLength={children.length}
-          onAdd={handleAddClick}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteClick}
+          name={node.name}
+          childrenLength={node.children.length}
+          isRootNode={isRootNode}
+          onAdd={() => onOpenPopup('Add', node.name, node.id)}
+          onEdit={() => onOpenPopup('Edit', node.name, node.id)}
+          onDelete={() => console.log('Delete', node.name)}
         />
-      </div>
-      {isExpanded && children.length > 0 && (
-        <div className={styles.treeNode__children}>
-          {children.map((child) => (
-            <TreeNode key={child.id} {...child} />
+      </Box>
+      {node.children.length > 0 && isExpanded && (
+        <Box className={styles.treeNode__children}>
+          {node.children.map((childNode) => (
+            <TreeNode
+              isRootNode={false}
+              node={childNode}
+              onOpenPopup={onOpenPopup}
+            />
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

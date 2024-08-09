@@ -1,23 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store';
+import { openPopup } from '../../slices/popupSlice';
+import { fetchTreeData } from '../../slices/treeSlice';
 import TreeNode from './TreeNode';
-import { ITreeNode } from './types';
-import { API_GET_TREE_URL } from '../../api/endpoints';
 
 const Tree: React.FC = () => {
-  const [treeData, setTreeData] = useState<ITreeNode | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const { node, loading, error } = useSelector(
+    (state: RootState) => state.tree
+  );
 
   useEffect(() => {
-    fetch(API_GET_TREE_URL, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setTreeData(data));
-  }, []);
+    dispatch(fetchTreeData());
+  }, [dispatch]);
 
-  return <>{treeData ? <TreeNode {...treeData} /> : 'empty tree'}</>;
+  const handleOpenPopup = (
+    header: string,
+    nodeName: string,
+    nodeId?: number
+  ) => {
+    dispatch(openPopup({ header, nodeName, nodeId }));
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <>
+      {node ? (
+        <TreeNode node={node} isRootNode={true} onOpenPopup={handleOpenPopup} />
+      ) : (
+        'empty tree'
+      )}
+    </>
+  );
 };
 
 export default Tree;
