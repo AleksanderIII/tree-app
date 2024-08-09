@@ -1,0 +1,10 @@
+.treeNode {
+  display: flex;
+  flex-direction: column;
+}
+
+.treeNode__content {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
