@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export enum PopupTypes {
+  Add = 'Add',
+  Edit = 'Edit',
+  Delete = 'Delete',
+}
+
 interface PopupContent {
-  header: string;
   nodeName: string;
 }
 
 interface PopupState {
+  type: PopupTypes | null;
   isOpen: boolean;
   content: PopupContent;
   nodeId?: number;
@@ -13,8 +19,9 @@ interface PopupState {
 }
 
 const initialState: PopupState = {
+  type: null,
   isOpen: false,
-  content: { header: '', nodeName: '' },
+  content: { nodeName: '' },
   nodeId: undefined,
   childrenLength: undefined,
 };
@@ -26,15 +33,15 @@ const popupSlice = createSlice({
     openPopup(
       state,
       action: PayloadAction<{
-        header: string;
+        type: PopupTypes;
         nodeName: string;
         nodeId?: number;
         childrenLength?: number;
       }>
     ) {
       state.isOpen = true;
+      state.type = action.payload.type;
       state.content = {
-        header: action.payload.header,
         nodeName: action.payload.nodeName,
       };
       state.nodeId = action.payload.nodeId;
@@ -42,7 +49,8 @@ const popupSlice = createSlice({
     },
     closePopup(state) {
       state.isOpen = false;
-      state.content = { header: '', nodeName: '' };
+      state.type = null;
+      state.content = { nodeName: '' };
       state.nodeId = undefined;
     },
   },

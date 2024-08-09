@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { closePopup } from '../../../slices/popupSlice';
-import { addNode } from '../../../slices/treeSlice';
+import { closePopup } from '../../../store/slices/popupSlice';
+import { addNode } from '../../../store/slices/treeSlice';
 
 const AddPopupContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,17 +28,23 @@ const AddPopupContent: React.FC = () => {
   };
 
   return (
-    <>
+    <Box>
       <TextField
         fullWidth
         label='Enter node name'
         value={nodeName}
         onChange={handleInputChange}
+        variant='outlined'
       />
-      <Button onClick={handleAdd} color='primary'>
-        Add
-      </Button>
-    </>
+      <Box mt={2} display='flex' justifyContent='flex-end' gap={1}>
+        <Button onClick={() => dispatch(closePopup())} color='secondary'>
+          Cancel
+        </Button>
+        <Button onClick={handleAdd} color='primary' variant='contained'>
+          Add
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

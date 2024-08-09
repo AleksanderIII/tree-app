@@ -1,15 +1,16 @@
 import React from 'react';
-import { Node } from '../../slices/treeSlice';
+import { Node } from '../../store/slices/treeSlice';
 import TreeNodeContent from './TreeNodeContent';
 import TreeNodeToggle from './TreeNodeToggle';
 import styles from './Tree.module.css';
 import { Box } from '@mui/material';
+import { PopupTypes } from '../../store/slices/popupSlice';
 
 interface TreeNodeProps {
   isRootNode: boolean;
   node: Node;
   onOpenPopup: (
-    header: string,
+    type: PopupTypes,
     nodeName: string,
     nodeId?: number,
     childrenLength?: number
@@ -45,10 +46,15 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           name={node.name}
           childrenLength={node.children.length}
           isRootNode={isRootNode}
-          onAdd={() => onOpenPopup('Add', node.name, node.id)}
-          onEdit={() => onOpenPopup('Edit', node.name, node.id)}
+          onAdd={() => onOpenPopup(PopupTypes.Add, node.name, node.id)}
+          onEdit={() => onOpenPopup(PopupTypes.Edit, node.name, node.id)}
           onDelete={() =>
-            onOpenPopup('Delete', node.name, node.id, node.children.length)
+            onOpenPopup(
+              PopupTypes.Delete,
+              node.name,
+              node.id,
+              node.children.length
+            )
           }
         />
       </Box>

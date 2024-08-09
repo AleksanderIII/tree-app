@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { closePopup } from '../../../slices/popupSlice';
-import { renameNode } from '../../../slices/treeSlice';
+import { closePopup } from '../../../store/slices/popupSlice';
+import { renameNode } from '../../../store/slices/treeSlice';
 
 const EditPopupContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,17 +32,23 @@ const EditPopupContent: React.FC = () => {
   };
 
   return (
-    <>
+    <Box>
       <TextField
         fullWidth
         label='Edit node name'
         value={nodeName}
         onChange={handleInputChange}
+        variant='outlined'
       />
-      <Button onClick={handleRename} color='primary'>
-        Rename
-      </Button>
-    </>
+      <Box mt={2} display='flex' justifyContent='flex-end' gap={1}>
+        <Button onClick={() => dispatch(closePopup())} color='secondary'>
+          Cancel
+        </Button>
+        <Button onClick={handleRename} color='primary' variant='contained'>
+          Rename
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import popupReducer from '../slices/popupSlice';
-import treeReducer from '../slices/treeSlice';
+import popupReducer from './slices/popupSlice';
+import treeReducer from './slices/treeSlice';
 
 const store = configureStore({
   reducer: {

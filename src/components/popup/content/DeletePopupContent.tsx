@@ -1,8 +1,9 @@
+import React from 'react';
+import { Button, Box, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { closePopup } from '../../../slices/popupSlice';
-import { deleteNode } from '../../../slices/treeSlice';
-import { Button } from '@mui/material';
+import { closePopup } from '../../../store/slices/popupSlice';
+import { deleteNode } from '../../../store/slices/treeSlice';
 
 const DeletePopupContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,18 +21,21 @@ const DeletePopupContent: React.FC = () => {
   };
 
   return (
-    <>
-      {childrenLength ? (
-        <p>You need to delete all children to delete this one</p>
-      ) : (
-        <>
-          <p>Are you sure you want to delete this node?</p>
-          <Button onClick={handleDelete} color='primary'>
-            Delete
-          </Button>
-        </>
-      )}
-    </>
+    <Box>
+      <Typography variant='body1'>
+        {childrenLength
+          ? 'You need to delete all children to delete this one'
+          : 'Are you sure you want to delete this node?'}
+      </Typography>
+      <Box mt={2} display='flex' justifyContent='flex-end' gap={1}>
+        <Button onClick={() => dispatch(closePopup())} color='secondary'>
+          Cancel
+        </Button>
+        <Button onClick={handleDelete} color='primary' variant='contained'>
+          Delete
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

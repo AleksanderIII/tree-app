@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { fetchTreeData, toggleNodeExpansion } from '../../slices/treeSlice';
+import {
+  fetchTreeData,
+  toggleNodeExpansion,
+} from '../../store/slices/treeSlice';
 import TreeNode from './TreeNode';
-import { openPopup } from '../../slices/popupSlice';
+import { openPopup, PopupTypes } from '../../store/slices/popupSlice';
 
 const Tree: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,12 +19,12 @@ const Tree: React.FC = () => {
   }, [dispatch]);
 
   const handleOpenPopup = (
-    header: string,
+    type: PopupTypes,
     nodeName: string,
     nodeId?: number,
     childrenLength?: number
   ) => {
-    dispatch(openPopup({ header, nodeName, nodeId, childrenLength }));
+    dispatch(openPopup({ type, nodeName, nodeId, childrenLength }));
   };
 
   const handleToggleNode = (nodeId: number) => {
