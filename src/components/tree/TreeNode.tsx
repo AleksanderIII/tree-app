@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Node } from '../../slices/treeSlice';
 import TreeNodeContent from './TreeNodeContent';
 import TreeNodeToggle from './TreeNodeToggle';
@@ -14,17 +14,21 @@ interface TreeNodeProps {
     nodeId?: number,
     childrenLength?: number
   ) => void;
+  expandedNodeIds: number[];
+  onToggleNode: (nodeId: number) => void;
 }
 
 const TreeNode: React.FC<TreeNodeProps> = ({
   node,
   isRootNode,
   onOpenPopup,
+  expandedNodeIds,
+  onToggleNode,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const isExpanded = expandedNodeIds.includes(node.id);
 
   const handleToggle = () => {
-    setIsExpanded((prev) => !prev);
+    onToggleNode(node.id);
   };
 
   return (
@@ -52,10 +56,12 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         <Box className={styles.treeNode__children}>
           {node.children.map((childNode) => (
             <TreeNode
-              key={childNode.name}
+              key={childNode.id}
               isRootNode={false}
               node={childNode}
               onOpenPopup={onOpenPopup}
+              expandedNodeIds={expandedNodeIds}
+              onToggleNode={onToggleNode}
             />
           ))}
         </Box>

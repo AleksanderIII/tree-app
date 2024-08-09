@@ -14,16 +14,19 @@ export interface Node {
 
 interface TreeState {
   node: Node | null;
+  expandedNodeIds: number[];
   loading: boolean;
   error: Error | null;
 }
 
 const initialState: TreeState = {
   node: null,
+  expandedNodeIds: [],
   loading: false,
   error: null,
 };
 
+// Fetch the entire tree data
 export const fetchTreeData = createAsyncThunk<Node>(
   'tree/fetchTreeData',
   async () => {
@@ -40,27 +43,46 @@ export const fetchTreeData = createAsyncThunk<Node>(
   }
 );
 
-export const renameNode = createAsyncThunk<
-  void,
-  { nodeId: number; newName: string }
->('tree/renameNode', async ({ nodeId, newName }, { dispatch }) => {
-  const response = await fetch(
-    `${API_RENAME_NODE_URL}&nodeId=${nodeId}&newNodeName=${newName}`,
-    {
+// Fetch the entire tree data without affecting loading state
+export const fetchTreeDataWithoutLoading = createAsyncThunk<Node>(
+  'tree/fetchTreeDataWithoutLoading',
+  async () => {
+    const response = await fetch(API_GET_TREE_URL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
       },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch tree data');
     }
-  );
-
-  if (!response.ok) {
-    throw new Error('Failed to rename node');
+    return response.json();
   }
+);
 
-  dispatch(updateNodeName({ nodeId, newName }));
-});
+// Rename a node
+export const renameNode = createAsyncThunk<void, { nodeId: number; newName: string }>(
+  'tree/renameNode',
+  async ({ nodeId, newName }, { dispatch }) => {
+    const response = await fetch(
+      `${API_RENAME_NODE_URL}&nodeId=${nodeId}&newNodeName=${newName}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+      }
+    );
 
+    if (!response.ok) {
+      throw new Error('Failed to rename node');
+    }
+
+    dispatch(updateNodeLocally({ nodeId, updates: { name: newName } }));
+  }
+);
+
+// Delete a node
 export const deleteNode = createAsyncThunk<void, number>(
   'tree/deleteNode',
   async (nodeId, { dispatch }) => {
@@ -75,95 +97,71 @@ export const deleteNode = createAsyncThunk<void, number>(
       throw new Error('Failed to delete node');
     }
 
-    dispatch(removeNode({ nodeId }));
+    dispatch(removeNodeLocally(nodeId));
   }
 );
 
-export const addNode = createAsyncThunk<
-  void,
-  { parentNodeId: number; nodeName: string }
->('tree/addNode', async ({ parentNodeId, nodeName }, { dispatch }) => {
-  const response = await fetch(
-    `${API_CREATE_NODE_URL}&parentNodeId=${parentNodeId}&nodeName=${nodeName}`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
+// Add a node
+export const addNode = createAsyncThunk<void, { parentNodeId: number; nodeName: string }>(
+  'tree/addNode',
+  async ({ parentNodeId, nodeName }, { dispatch }) => {
+    const response = await fetch(
+      `${API_CREATE_NODE_URL}&parentNodeId=${parentNodeId}&nodeName=${nodeName}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to add node');
     }
-  );
 
-  if (!response.ok) {
-    throw new Error('Failed to add node');
+    // Запрашиваем обновленное дерево после добавления нового узла
+    dispatch(fetchTreeDataWithoutLoading()); // Обновляем данные без изменения состояния loading
   }
-
-   dispatch(addNodeToTree({ parentNodeId, nodeName }));
-});
+);
 
 const treeSlice = createSlice({
   name: 'tree',
   initialState,
   reducers: {
-    updateNodeName: (
-      state,
-      action: PayloadAction<{ nodeId: number; newName: string }>
-    ) => {
-      const { nodeId, newName } = action.payload;
-
-      const updateNode = (node: Node | null): void => {
-        if (!node) return;
-
-        for (const child of node.children) {
-          if (child.id === nodeId) {
-            child.name = newName;
-          }
-          if (child.children) {
-            updateNode(child);
-          }
+    updateNodeLocally(state, action: PayloadAction<{ nodeId: number; updates: Partial<Node> }>) {
+      const { nodeId, updates } = action.payload;
+      const updateNode = (node: Node | null): Node | null => {
+        if (!node) return null;
+        if (node.id === nodeId) {
+          return { ...node, ...updates };
         }
+        return {
+          ...node,
+          children: node.children.map(updateNode).filter(Boolean) as Node[],
+        };
       };
-
-      updateNode(state.node);
+      state.node = updateNode(state.node);
     },
-    removeNode: (state, action: PayloadAction<{ nodeId: number }>) => {
-      const { nodeId } = action.payload;
-
-      const removeNode = (nodes: Node[]): Node[] => {
-        return nodes.filter((node) => {
-          if (node.id === nodeId) {
-            return false;
-          }
-          node.children = removeNode(node.children);
+    removeNodeLocally(state, action: PayloadAction<number>) {
+      const nodeId = action.payload;
+      const removeNode = (nodes: Node[], idToRemove: number): Node[] => {
+        return nodes.filter(node => {
+          if (node.id === idToRemove) return false;
+          node.children = removeNode(node.children, idToRemove);
           return true;
         });
       };
-
       if (state.node) {
-        state.node.children = removeNode(state.node.children);
+        state.node.children = removeNode(state.node.children, nodeId);
       }
     },
-    addNodeToTree: (
-      state,
-      action: PayloadAction<{ parentNodeId: number; nodeName: string }>
-    ) => {
-      const { parentNodeId, nodeName } = action.payload;
-
-      const addNode = (nodes: Node[]): void => {
-        for (const node of nodes) {
-          if (node.id === parentNodeId) {
-            node.children.push({
-              id: Date.now(),
-              name: nodeName,
-              children: [],
-            });
-          } else if (node.children.length > 0) {
-            addNode(node.children);
-          }
-        }
-      };
-
-      if (state.node) {
-        addNode(state.node.children);
+    toggleNodeExpansion(state, action: PayloadAction<number>) {
+      const nodeId = action.payload;
+      const index = state.expandedNodeIds.indexOf(nodeId);
+      if (index > -1) {
+        state.expandedNodeIds.splice(index, 1); // Удаление элемента
+      } else {
+        state.expandedNodeIds.push(nodeId); // Добавление элемента
       }
     },
   },
@@ -173,22 +171,28 @@ const treeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        fetchTreeData.fulfilled,
-        (state, action: PayloadAction<Node>) => {
-          state.node = action.payload;
-          state.loading = false;
-        }
-      )
+      .addCase(fetchTreeData.fulfilled, (state, action: PayloadAction<Node>) => {
+        state.node = action.payload;
+        state.loading = false;
+      })
       .addCase(fetchTreeData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error as Error;
       })
+      .addCase(fetchTreeDataWithoutLoading.fulfilled, (state, action: PayloadAction<Node>) => {
+        state.node = action.payload;
+      })
       .addCase(renameNode.rejected, (state, action) => {
+        state.error = action.error as Error;
+      })
+      .addCase(deleteNode.rejected, (state, action) => {
+        state.error = action.error as Error;
+      })
+      .addCase(addNode.rejected, (state, action) => {
         state.error = action.error as Error;
       });
   },
 });
 
-export const { updateNodeName, removeNode, addNodeToTree } = treeSlice.actions;
+export const { updateNodeLocally, removeNodeLocally, toggleNodeExpansion } = treeSlice.actions;
 export default treeSlice.reducer;
