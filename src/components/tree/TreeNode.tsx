@@ -1,15 +1,12 @@
 import { useState } from 'react';
-
-import Button from '../button/Button';
-import { usePopup } from '../../context/PopupContext';
-
 import { ITreeNode } from './types';
-
+import TreeNodeToggle from './TreeNodeToggle';
+import TreeNodeContent from './TreeNodeContent';
+import { usePopup } from '../../context/PopupContext';
 import styles from './Tree.module.css';
 
-const TreeNode = ({ name, children }: ITreeNode) => {
+const TreeNode: React.FC<ITreeNode> = ({ name, children, id }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
   const { openPopup } = usePopup();
 
   const handleAddClick = () => {
@@ -17,6 +14,8 @@ const TreeNode = ({ name, children }: ITreeNode) => {
       header: 'Add',
       body: <input type='text' placeholder='Enter node name' />,
       footer: null,
+      nodeId: null,
+      nodeName: '',
     });
   };
 
@@ -24,48 +23,42 @@ const TreeNode = ({ name, children }: ITreeNode) => {
     openPopup({
       header: 'Edit',
       body: (
-        <input type='text' defaultValue={name} placeholder='Enter new name' />
+        <input type='text' defaultValue={name} placeholder='Edit node name' />
       ),
       footer: null,
+      nodeId: id,
+      nodeName: name,
     });
   };
+
   const handleDeleteClick = () => {
     console.log('Delete', name);
   };
 
   return (
     <div className={styles.treeNode}>
-      <div
-        className={styles.treeNode__content}
-        onClick={() => setIsExpanded((expanded) => !expanded)}
-      >
-        {children.length ? (
-          <span>
-            {isExpanded ? <span>&#9660;</span> : <span>&#9658;</span>}
-          </span>
-        ) : null}
-        <div>{name}</div>
-        <Button color='green' handleClick={handleAddClick}>
-          &#43;
-        </Button>
-        <Button color='blue' handleClick={handleEditClick}>
-          &#9998;
-        </Button>
-        <Button color='red' handleClick={handleDeleteClick}>
-          &#10006;
-        </Button>
+      <div className={styles.treeNode__content}>
+        {children.length > 0 && (
+          <TreeNodeToggle
+            isExpanded={isExpanded}
+            onClick={() => setIsExpanded((prev) => !prev)}
+          />
+        )}
+        <TreeNodeContent
+          name={name}
+          childrenLength={children.length}
+          onAdd={handleAddClick}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+        />
       </div>
-      {isExpanded ? (
-        <div style={{ marginLeft: '15px' }}>
-          {children.length ? (
-            <>
-              {children.map((child) => (
-                <TreeNode key={child.id} {...child} />
-              ))}
-            </>
-          ) : null}
+      {isExpanded && children.length > 0 && (
+        <div className={styles.treeNode__children}>
+          {children.map((child) => (
+            <TreeNode key={child.id} {...child} />
+          ))}
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

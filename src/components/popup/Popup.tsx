@@ -1,13 +1,24 @@
-import { cloneElement, useState } from 'react';
-
-import Button from '../button/Button';
+import React, { useState, useEffect } from 'react';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  TextField,
+} from '@mui/material';
 import { usePopup } from '../../context/PopupContext';
-
-import styles from './Popup.module.css';
+import { API_RENAME_NODE_URL } from '../../api/endpoints';
 
 const Popup: React.FC = () => {
   const { isOpen, content, closePopup } = usePopup();
   const [nodeName, setNodeName] = useState<string>('');
+
+  useEffect(() => {
+    if (isOpen && content.header === 'Edit') {
+      setNodeName(content.nodeName || '');
+    }
+  }, [isOpen, content]);
 
   const handleAdd = () => {
     console.log('Add', nodeName);
@@ -15,8 +26,24 @@ const Popup: React.FC = () => {
   };
 
   const handleRename = () => {
-    console.log('Rename', nodeName);
-    closePopup();
+    const nodeId = content.nodeId;
+    const newName = nodeName;
+
+    fetch(`${API_RENAME_NODE_URL}?nodeId=${nodeId}&newNodeName=${newName}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Node renamed successfully');
+          closePopup();
+        } else {
+          console.error('Failed to rename node');
+        }
+      })
+      .catch((error) => console.error('Error:', error));
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,39 +53,34 @@ const Popup: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.popup}>
-      <div className={styles.popupHeader}>{content.header}</div>
-      <div className={styles.popupContent}>
-        {content.body ? (
-          cloneElement(content.body as JSX.Element, {
-            value: nodeName,
-            onChange: handleInputChange,
-          })
-        ) : (
-          <input
-            type='text'
-            value={nodeName}
-            onChange={handleInputChange}
-            placeholder='Node Name'
-          />
-        )}
-      </div>
-      <div className={styles.popupFooter}>
-        <Button color='blue' handleClick={closePopup}>
+    <Dialog open={isOpen} onClose={closePopup}>
+      <DialogTitle>{content.header}</DialogTitle>
+      <DialogContent>
+        <TextField
+          fullWidth
+          label={
+            content.header === 'Add' ? 'Enter node name' : 'Edit node name'
+          }
+          value={nodeName}
+          onChange={handleInputChange}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closePopup} color='primary'>
           Cancel
         </Button>
         {content.header === 'Add' && (
-          <Button color='blue' handleClick={handleAdd}>
+          <Button onClick={handleAdd} color='primary'>
             Add
           </Button>
         )}
         {content.header === 'Edit' && (
-          <Button color='blue' handleClick={handleRename}>
+          <Button onClick={handleRename} color='primary'>
             Rename
           </Button>
         )}
-      </div>
-    </div>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -5,6 +5,9 @@
 
 .treeNode__content {
   display: flex;
-  margin-bottom: 10px;
   align-items: center;
+}
+
+.treeNode__children {
+  margin-left: 40px;
 }

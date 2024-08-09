@@ -4,6 +4,8 @@ interface IPopupContent {
   header: string;
   body: null | JSX.Element;
   footer: null | JSX.Element;
+  nodeId: null | number;
+  nodeName: string;
 }
 
 interface IPopupContext {
@@ -17,6 +19,8 @@ const initPopupContent: IPopupContent = {
   header: '',
   body: null,
   footer: null,
+  nodeId: null,
+  nodeName: '',
 };
 
 const PopupContext = createContext<IPopupContext | undefined>(undefined);
