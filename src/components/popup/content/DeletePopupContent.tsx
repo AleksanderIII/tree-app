@@ -35,7 +35,12 @@ const DeletePopupContent: React.FC = () => {
         >
           Cancel
         </Button>
-        <Button onClick={handleDelete} color='primary' variant='contained'>
+        <Button
+          onClick={handleDelete}
+          disabled={!!childrenLength}
+          color='primary'
+          variant='contained'
+        >
           Delete
         </Button>
       </Box>
