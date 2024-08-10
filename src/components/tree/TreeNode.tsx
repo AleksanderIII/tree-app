@@ -11,7 +11,7 @@ import { INode } from '../../store/slices/tree/treeTypes';
 
 import styles from './Tree.module.css';
 
-interface TreeNodeProps {
+interface ITreeNodeProps {
   isRootNode: boolean;
   node: INode;
   onOpenPopup: (payload: IOpenPopupPayload) => void;
@@ -19,7 +19,7 @@ interface TreeNodeProps {
   onToggleNode: (nodeId: number) => void;
 }
 
-const TreeNode: React.FC<TreeNodeProps> = ({
+const TreeNode: React.FC<ITreeNodeProps> = ({
   node,
   isRootNode,
   onOpenPopup,
