@@ -28,3 +28,12 @@
     visibility: visible;
   }
 }
+
+.treeNode__content__item {
+  margin-right: 5px;
+}
+
+.toggleIcon {
+  position: absolute !important;
+  left: -30px;
+}

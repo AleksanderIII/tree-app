@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
+import ControlsPanel from './ControlsPanel';
 
 import styles from './Tree.module.css';
-import ControlsPanel from './ControlsPanel';
 
 interface ITreeNodeContentProps {
   name: string;
@@ -22,11 +22,11 @@ const TreeNodeContent: React.FC<ITreeNodeContentProps> = ({
 }) => {
   return (
     <Box className={styles.treeNode__content}>
-      <Typography style={{ marginRight: '5px' }}>
+      <Typography className={styles.treeNode__content__item}>
         {isRootNode ? 'ROOT' : name}
       </Typography>
       {childrenLength ? (
-        <Typography style={{ marginRight: '5px' }}>
+        <Typography className={styles.treeNode__content__item}>
           ({childrenLength})
         </Typography>
       ) : null}

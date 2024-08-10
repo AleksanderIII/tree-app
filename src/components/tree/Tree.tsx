@@ -5,7 +5,7 @@ import { toggleNodeExpansion } from '../../store/slices/tree/treeSlice';
 import TreeNode from './TreeNode';
 import { openPopup } from '../../store/slices/popup/popupSlice';
 import { fetchTreeData } from '../../store/slices/tree/treeThunks';
-import { PopupTypes } from '../../store/slices/popup/popupTypes';
+import { IOpenPopupPayload } from '../../store/slices/popup/popupTypes';
 
 const Tree: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,12 +17,12 @@ const Tree: React.FC = () => {
     dispatch(fetchTreeData());
   }, [dispatch]);
 
-  const handleOpenPopup = (
-    type: PopupTypes,
-    nodeName: string,
-    nodeId?: number,
-    childrenLength?: number
-  ) => {
+  const handleOpenPopup = ({
+    type,
+    nodeName,
+    nodeId,
+    childrenLength,
+  }: IOpenPopupPayload) => {
     dispatch(openPopup({ type, nodeName, nodeId, childrenLength }));
   };
 
@@ -44,7 +44,7 @@ const Tree: React.FC = () => {
           onToggleNode={handleToggleNode}
         />
       ) : (
-        'empty tree'
+        'Empty Tree'
       )}
     </>
   );

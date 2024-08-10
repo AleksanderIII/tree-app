@@ -1,20 +1,20 @@
 import React from 'react';
+import { Box } from '@mui/material';
+
 import TreeNodeContent from './TreeNodeContent';
 import TreeNodeToggle from './TreeNodeToggle';
-import styles from './Tree.module.css';
-import { Box } from '@mui/material';
-import { PopupTypes } from '../../store/slices/popup/popupTypes';
+import {
+  IOpenPopupPayload,
+  PopupTypes,
+} from '../../store/slices/popup/popupTypes';
 import { INode } from '../../store/slices/tree/treeTypes';
+
+import styles from './Tree.module.css';
 
 interface TreeNodeProps {
   isRootNode: boolean;
   node: INode;
-  onOpenPopup: (
-    type: PopupTypes,
-    nodeName: string,
-    nodeId?: number,
-    childrenLength?: number
-  ) => void;
+  onOpenPopup: (payload: IOpenPopupPayload) => void;
   expandedNodeIds: number[];
   onToggleNode: (nodeId: number) => void;
 }
@@ -31,6 +31,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const handleToggle = () => {
     onToggleNode(node.id);
   };
+  const popupPayload = {
+    nodeName: node.name,
+    nodeId: node.id,
+    childrenLength: node.children.length,
+  };
 
   return (
     <Box className={styles.treeNode}>
@@ -46,15 +51,10 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           name={node.name}
           childrenLength={node.children.length}
           isRootNode={isRootNode}
-          onAdd={() => onOpenPopup(PopupTypes.Add, node.name, node.id)}
-          onEdit={() => onOpenPopup(PopupTypes.Edit, node.name, node.id)}
+          onAdd={() => onOpenPopup({ ...popupPayload, type: PopupTypes.Add })}
+          onEdit={() => onOpenPopup({ ...popupPayload, type: PopupTypes.Edit })}
           onDelete={() =>
-            onOpenPopup(
-              PopupTypes.Delete,
-              node.name,
-              node.id,
-              node.children.length
-            )
+            onOpenPopup({ ...popupPayload, type: PopupTypes.Delete })
           }
         />
       </Box>
