@@ -27,3 +27,39 @@ Follow these steps to set up and run the project locally.
 git clone <repository-link>
 cd tree-app
 ```
+
+Replace <repository-link> with the actual URL of your Git repository.
+
+### Install Dependencies
+
+npm install
+
+### Running the Application
+
+npm run dev
+
+### Building for Production
+
+npm run build
+
+## Project Structure
+
+tree-app/
+├── public/ # Static files served by the application
+├── src/ # Main application code
+│ ├── api/ # API endpoints
+│ ├── components/ # React components used in the application
+│ ├── store/ # Redux store configuration
+│ ├── models/ # TypeScript type definitions
+│ └── main.tsx # Entry point for the React application
+├── vite.config.ts # Configuration file for Vite
+├── package.json # Project metadata and dependencies
+├── tsconfig.json # TypeScript configuration
+└── README.md # Project documentation
+
+## Dependencies
+
+React: A JavaScript library for building user interfaces.
+Redux Toolkit: The official toolset for efficient Redux development.
+Vite: A fast build tool for modern web applications.
+MUI: A popular React UI framework.
