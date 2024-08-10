@@ -28,7 +28,11 @@ const DeletePopupContent: React.FC = () => {
           : 'Are you sure you want to delete this node?'}
       </Typography>
       <Box mt={2} display='flex' justifyContent='flex-end' gap={1}>
-        <Button onClick={() => dispatch(closePopup())} color='secondary'>
+        <Button
+          onClick={() => dispatch(closePopup())}
+          color='secondary'
+          variant='contained'
+        >
           Cancel
         </Button>
         <Button onClick={handleDelete} color='primary' variant='contained'>

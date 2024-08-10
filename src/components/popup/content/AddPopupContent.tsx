@@ -37,7 +37,11 @@ const AddPopupContent: React.FC = () => {
         variant='outlined'
       />
       <Box mt={2} display='flex' justifyContent='flex-end' gap={1}>
-        <Button onClick={() => dispatch(closePopup())} color='secondary'>
+        <Button
+          onClick={() => dispatch(closePopup())}
+          color='secondary'
+          variant='contained'
+        >
           Cancel
         </Button>
         <Button onClick={handleAdd} color='primary' variant='contained'>

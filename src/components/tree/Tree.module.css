@@ -20,7 +20,7 @@
 
 .controlsPanel {
   visibility: hidden;
-  transition: visibility 0.2s ease-in-out;
+  transition: visibility 0.05s ease-in-out;
 }
 
 .treeNode__content:hover {
