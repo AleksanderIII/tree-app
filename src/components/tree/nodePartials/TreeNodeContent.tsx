@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import ControlsPanel from './ControlsPanel';
 
-import styles from './Tree.module.css';
+import styles from '../Tree.module.css';
 
 interface ITreeNodeContentProps {
   name: string;

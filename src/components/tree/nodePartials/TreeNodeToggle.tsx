@@ -2,7 +2,7 @@ import { IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-import styles from './Tree.module.css';
+import styles from '../Tree.module.css';
 
 interface ITreeNodeToggleProps {
   isExpanded: boolean;

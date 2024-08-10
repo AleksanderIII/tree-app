@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { toggleNodeExpansion } from '../../store/slices/tree/treeSlice';
-import TreeNode from './TreeNode';
+import TreeNode from './nodePartials/TreeNode';
 import { openPopup } from '../../store/slices/popup/popupSlice';
 import { fetchTreeData } from '../../store/slices/tree/treeThunks';
 import { IOpenPopupPayload } from '../../store/slices/popup/popupTypes';

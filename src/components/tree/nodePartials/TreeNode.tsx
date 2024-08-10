@@ -6,10 +6,10 @@ import TreeNodeToggle from './TreeNodeToggle';
 import {
   IOpenPopupPayload,
   PopupTypes,
-} from '../../store/slices/popup/popupTypes';
-import { INode } from '../../store/slices/tree/treeTypes';
+} from '../../../store/slices/popup/popupTypes';
+import { INode } from '../../../store/slices/tree/treeTypes';
 
-import styles from './Tree.module.css';
+import styles from '../Tree.module.css';
 
 interface ITreeNodeProps {
   isRootNode: boolean;
