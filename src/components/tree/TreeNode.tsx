@@ -1,14 +1,14 @@
 import React from 'react';
-import { Node } from '../../store/slices/treeSlice';
 import TreeNodeContent from './TreeNodeContent';
 import TreeNodeToggle from './TreeNodeToggle';
 import styles from './Tree.module.css';
 import { Box } from '@mui/material';
-import { PopupTypes } from '../../store/slices/popupSlice';
+import { PopupTypes } from '../../store/slices/popup/popupTypes';
+import { INode } from '../../store/slices/tree/treeTypes';
 
 interface TreeNodeProps {
   isRootNode: boolean;
-  node: Node;
+  node: INode;
   onOpenPopup: (
     type: PopupTypes,
     nodeName: string,

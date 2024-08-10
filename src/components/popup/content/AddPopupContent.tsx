@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, TextField, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { closePopup } from '../../../store/slices/popupSlice';
-import { addNode } from '../../../store/slices/treeSlice';
+import { closePopup } from '../../../store/slices/popup/popupSlice';
+import { addNode } from '../../../store/slices/tree/treeThunks';
 
 const AddPopupContent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

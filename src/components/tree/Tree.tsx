@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import {
-  fetchTreeData,
-  toggleNodeExpansion,
-} from '../../store/slices/treeSlice';
+import { toggleNodeExpansion } from '../../store/slices/tree/treeSlice';
 import TreeNode from './TreeNode';
-import { openPopup, PopupTypes } from '../../store/slices/popupSlice';
+import { openPopup } from '../../store/slices/popup/popupSlice';
+import { fetchTreeData } from '../../store/slices/tree/treeThunks';
+import { PopupTypes } from '../../store/slices/popup/popupTypes';
 
 const Tree: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

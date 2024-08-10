@@ -1,44 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export enum PopupTypes {
-  Add = 'Add',
-  Edit = 'Edit',
-  Delete = 'Delete',
-}
-
-interface PopupContent {
-  nodeName: string;
-}
-
-interface PopupState {
-  type: PopupTypes | null;
-  isOpen: boolean;
-  content: PopupContent;
-  nodeId?: number;
-  childrenLength?: number;
-}
-
-const initialState: PopupState = {
-  type: null,
-  isOpen: false,
-  content: { nodeName: '' },
-  nodeId: undefined,
-  childrenLength: undefined,
-};
+import { IOpenPopupPayload } from './popupTypes';
+import { initialState } from './initialState';
 
 const popupSlice = createSlice({
   name: 'popup',
   initialState,
   reducers: {
-    openPopup(
-      state,
-      action: PayloadAction<{
-        type: PopupTypes;
-        nodeName: string;
-        nodeId?: number;
-        childrenLength?: number;
-      }>
-    ) {
+    openPopup(state, action: PayloadAction<IOpenPopupPayload>) {
       state.isOpen = true;
       state.type = action.payload.type;
       state.content = {

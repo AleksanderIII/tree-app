@@ -2,10 +2,11 @@ import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { closePopup, PopupTypes } from '../../store/slices/popupSlice';
+import { closePopup } from '../../store/slices/popup/popupSlice';
 import AddPopupContent from './content/AddPopupContent';
 import EditPopupContent from './content/EditPopupContent';
 import DeletePopupContent from './content/DeletePopupContent';
+import { PopupTypes } from '../../store/slices/popup/popupTypes';
 
 const Popup: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
